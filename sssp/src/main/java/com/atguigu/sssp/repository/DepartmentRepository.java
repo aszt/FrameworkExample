@@ -1,0 +1,23 @@
+package com.atguigu.sssp.repository;
+
+import java.util.List;
+
+import javax.persistence.QueryHint;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
+
+import com.atguigu.sssp.entity.Department;
+
+public interface DepartmentRepository extends JpaRepository<Department, Integer> {
+
+	/**
+	 * 启动查询缓存
+	 * @return
+	 */
+	@QueryHints({ @QueryHint(name = org.hibernate.ejb.QueryHints.HINT_CACHEABLE, value = "true") })
+	@Query("FROM Department d")
+	List<Department> getAll();
+	
+}
