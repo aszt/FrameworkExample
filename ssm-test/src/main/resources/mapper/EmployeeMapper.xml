@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tcy.dao.EmployeeMapper">
+	<resultMap id="EmployeeWithDept" type="Employee">
+		<id column="emp_id" property="empId" />
+		<result column="emp_name" property="empName" />
+		<result column="gender" property="gender" />
+		<result column="email" property="email" />
+		<result column="d_id" property="dId" />
+		<!-- 指定联合查询出的部门字段的封装 -->
+		<association property="department" javaType="Department">
+			<id column="dept_id" property="deptId" />
+			<result column="dept_name" property="deptName" />
+		</association>
+	</resultMap>
+
+	<sql id="WithDept_Column_List">
+		e.emp_id, e.emp_name, e.gender, e.email, e.d_id, d.dept_id,
+		d.dept_name
+	</sql>
+	
+	<select id="getEmployee" resultMap="EmployeeWithDept">
+		select
+		<include refid="WithDept_Column_List" />
+		FROM tbl_emp e LEFT JOIN tbl_dept d ON e.d_id = d.dept_id
+	</select>
+</mapper>

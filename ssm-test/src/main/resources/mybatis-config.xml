@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 是否开启自动驼峰命名规则（是否启用下划线与驼峰式命名规则的映射（如first_name => firstName） ） -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+	</settings>
+	<!-- 别名 -->
+	<typeAliases>
+		<typeAlias alias="Employee" type="com.tcy.bean.Employee"/> 
+		<typeAlias alias="Department" type="com.tcy.bean.Department"/> 
+	</typeAliases>
+</configuration>
