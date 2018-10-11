@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fin.dao.DictionaryMapper" >
+  <resultMap id="BaseResultMap" type="com.fin.pojo.Dictionary" >
+    <id column="ClassID" property="classid" jdbcType="INTEGER" />
+    <result column="ClassType" property="classtype" jdbcType="CHAR" />
+    <result column="Code" property="code" jdbcType="VARCHAR" />
+    <result column="Definition" property="definition" jdbcType="VARCHAR" />
+    <result column="Description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ClassID, ClassType, Code, Definition, Description
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fin.pojo.DictionaryExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from F_Dictionary
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from F_Dictionary
+    where ClassID = #{classid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from F_Dictionary
+    where ClassID = #{classid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fin.pojo.DictionaryExample" >
+    delete from F_Dictionary
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fin.pojo.Dictionary" >
+    insert into F_Dictionary (ClassID, ClassType, Code, 
+      Definition, Description)
+    values (#{classid,jdbcType=INTEGER}, #{classtype,jdbcType=CHAR}, #{code,jdbcType=VARCHAR}, 
+      #{definition,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fin.pojo.Dictionary" >
+    insert into F_Dictionary
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="classid != null" >
+        ClassID,
+      </if>
+      <if test="classtype != null" >
+        ClassType,
+      </if>
+      <if test="code != null" >
+        Code,
+      </if>
+      <if test="definition != null" >
+        Definition,
+      </if>
+      <if test="description != null" >
+        Description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="classid != null" >
+        #{classid,jdbcType=INTEGER},
+      </if>
+      <if test="classtype != null" >
+        #{classtype,jdbcType=CHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="definition != null" >
+        #{definition,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fin.pojo.DictionaryExample" resultType="java.lang.Integer" >
+    select count(*) from F_Dictionary
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update F_Dictionary
+    <set >
+      <if test="record.classid != null" >
+        ClassID = #{record.classid,jdbcType=INTEGER},
+      </if>
+      <if test="record.classtype != null" >
+        ClassType = #{record.classtype,jdbcType=CHAR},
+      </if>
+      <if test="record.code != null" >
+        Code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.definition != null" >
+        Definition = #{record.definition,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null" >
+        Description = #{record.description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update F_Dictionary
+    set ClassID = #{record.classid,jdbcType=INTEGER},
+      ClassType = #{record.classtype,jdbcType=CHAR},
+      Code = #{record.code,jdbcType=VARCHAR},
+      Definition = #{record.definition,jdbcType=VARCHAR},
+      Description = #{record.description,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fin.pojo.Dictionary" >
+    update F_Dictionary
+    <set >
+      <if test="classtype != null" >
+        ClassType = #{classtype,jdbcType=CHAR},
+      </if>
+      <if test="code != null" >
+        Code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="definition != null" >
+        Definition = #{definition,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        Description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ClassID = #{classid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fin.pojo.Dictionary" >
+    update F_Dictionary
+    set ClassType = #{classtype,jdbcType=CHAR},
+      Code = #{code,jdbcType=VARCHAR},
+      Definition = #{definition,jdbcType=VARCHAR},
+      Description = #{description,jdbcType=VARCHAR}
+    where ClassID = #{classid,jdbcType=INTEGER}
+  </update>
+</mapper>

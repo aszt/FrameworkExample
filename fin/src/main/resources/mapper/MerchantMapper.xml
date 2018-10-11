@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fin.dao.MerchantMapper" >
+  <resultMap id="BaseResultMap" type="com.fin.pojo.Merchant" >
+    <id column="MerID" property="merid" jdbcType="INTEGER" />
+    <result column="MerchantNo" property="merchantno" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="MobileNo" property="mobileno" jdbcType="VARCHAR" />
+    <result column="CompanyName" property="companyname" jdbcType="VARCHAR" />
+    <result column="NameAbbr" property="nameabbr" jdbcType="VARCHAR" />
+    <result column="MerEmail" property="meremail" jdbcType="VARCHAR" />
+    <result column="Description" property="description" jdbcType="VARCHAR" />
+    <result column="ImgUrl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="DATE" />
+    <result column="ParentID" property="parentid" jdbcType="INTEGER" />
+    <result column="LevelIn" property="levelin" jdbcType="INTEGER" />
+    <result column="IsDeposit" property="isdeposit" jdbcType="CHAR" />
+    <result column="OrgStatus" property="orgstatus" jdbcType="CHAR" />
+    <result column="OrgType" property="orgtype" jdbcType="CHAR" />
+    <result column="WorkFlowKey" property="workflowkey" jdbcType="VARCHAR" />
+    <result column="MerApplyID" property="merapplyid" jdbcType="INTEGER" />
+    <result column="CreatedAt" property="createdat" jdbcType="TIMESTAMP" />
+    <result column="CreatedBy" property="createdby" jdbcType="INTEGER" />
+    <result column="UpdatedAt" property="updatedat" jdbcType="TIMESTAMP" />
+    <result column="UpdatedBy" property="updatedby" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    MerID, MerchantNo, Name, MobileNo, CompanyName, NameAbbr, MerEmail, Description, 
+    ImgUrl, CreateDate, ParentID, LevelIn, IsDeposit, OrgStatus, OrgType, WorkFlowKey, 
+    MerApplyID, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy
+  </sql>
+
+  <resultMap type="com.fin.pojo.Merchant" id="MerchantResultMap" autoMapping="true">
+    <id column="MerID" property="merid" javaType="INTEGER"/>
+    <result property="parentCompany" column="parentCompany"/>
+    <result property="companyType" column="companyType"/>
+    <result property="companyStatus" column="companyStatus"/>
+  </resultMap>
+
+  <!-- 查询所有 -->
+  <select id="selectAll" resultMap="MerchantResultMap">
+    SELECT
+      m1.*,
+      m2.CompanyName 'parentCompany',
+      d.Definition 'companyType',
+      d1.Definition 'companyStatus'
+    FROM
+        F_Merchant m1
+    LEFT JOIN F_Merchant m2 ON m2.MerID = m1.ParentID
+    LEFT JOIN F_Dictionary d ON m1.OrgType = d.Code AND d.ClassType = '2204'
+    LEFT JOIN F_Dictionary d1 ON m1.OrgStatus = d1.Code AND d1.ClassType = '2203'
+    WHERE m1.OrgStatus != 'D'
+    <if test="merchantno!=null">AND m1.MerchantNo LIKE "%"#{merchantno}"%"</if>
+    <if test="companyname!=null">AND m1.CompanyName LIKE "%"#{companyname}"%"</if>
+    <if test="name!=null">AND m1.Name LIKE "%"#{name}"%"</if>
+    <if test="parentcompany!=null">AND m2.CompanyName LIKE "%"#{parentcompany}"%"</if>
+    <if test="orgtype!=null">AND m1.OrgType = #{orgtype}</if>
+    <if test="orgstatus!=null">AND m1.OrgStatus = #{orgstatus}</if>
+    <if test="starttime != null and starttime != ''">AND m1.CreateDate <![CDATA[>=]]> #{starttime}</if>
+    <if test="endtime != null and endtime != ''">AND m1.CreateDate <![CDATA[<=]]>#{endtime}</if>
+    ORDER BY m1.CreateDate DESC
+  </select>
+
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fin.pojo.MerchantExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from F_Merchant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from F_Merchant
+    where MerID = #{merid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from F_Merchant
+    where MerID = #{merid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fin.pojo.MerchantExample" >
+    delete from F_Merchant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fin.pojo.Merchant" >
+    insert into F_Merchant (MerID, MerchantNo, Name, 
+      MobileNo, CompanyName, NameAbbr, 
+      MerEmail, Description, ImgUrl, 
+      CreateDate, ParentID, LevelIn, 
+      IsDeposit, OrgStatus, OrgType, 
+      WorkFlowKey, MerApplyID, CreatedAt, 
+      CreatedBy, UpdatedAt, UpdatedBy
+      )
+    values (#{merid,jdbcType=INTEGER}, #{merchantno,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{mobileno,jdbcType=VARCHAR}, #{companyname,jdbcType=VARCHAR}, #{nameabbr,jdbcType=VARCHAR}, 
+      #{meremail,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{imgurl,jdbcType=VARCHAR}, 
+      #{createdate,jdbcType=DATE}, #{parentid,jdbcType=INTEGER}, #{levelin,jdbcType=INTEGER}, 
+      #{isdeposit,jdbcType=CHAR}, #{orgstatus,jdbcType=CHAR}, #{orgtype,jdbcType=CHAR}, 
+      #{workflowkey,jdbcType=VARCHAR}, #{merapplyid,jdbcType=INTEGER}, #{createdat,jdbcType=TIMESTAMP}, 
+      #{createdby,jdbcType=INTEGER}, #{updatedat,jdbcType=TIMESTAMP}, #{updatedby,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fin.pojo.Merchant" >
+    insert into F_Merchant
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="merid != null" >
+        MerID,
+      </if>
+      <if test="merchantno != null" >
+        MerchantNo,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="mobileno != null" >
+        MobileNo,
+      </if>
+      <if test="companyname != null" >
+        CompanyName,
+      </if>
+      <if test="nameabbr != null" >
+        NameAbbr,
+      </if>
+      <if test="meremail != null" >
+        MerEmail,
+      </if>
+      <if test="description != null" >
+        Description,
+      </if>
+      <if test="imgurl != null" >
+        ImgUrl,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="parentid != null" >
+        ParentID,
+      </if>
+      <if test="levelin != null" >
+        LevelIn,
+      </if>
+      <if test="isdeposit != null" >
+        IsDeposit,
+      </if>
+      <if test="orgstatus != null" >
+        OrgStatus,
+      </if>
+      <if test="orgtype != null" >
+        OrgType,
+      </if>
+      <if test="workflowkey != null" >
+        WorkFlowKey,
+      </if>
+      <if test="merapplyid != null" >
+        MerApplyID,
+      </if>
+      <if test="createdat != null" >
+        CreatedAt,
+      </if>
+      <if test="createdby != null" >
+        CreatedBy,
+      </if>
+      <if test="updatedat != null" >
+        UpdatedAt,
+      </if>
+      <if test="updatedby != null" >
+        UpdatedBy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="merid != null" >
+        #{merid,jdbcType=INTEGER},
+      </if>
+      <if test="merchantno != null" >
+        #{merchantno,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileno != null" >
+        #{mobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="companyname != null" >
+        #{companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="nameabbr != null" >
+        #{nameabbr,jdbcType=VARCHAR},
+      </if>
+      <if test="meremail != null" >
+        #{meremail,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=DATE},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=INTEGER},
+      </if>
+      <if test="levelin != null" >
+        #{levelin,jdbcType=INTEGER},
+      </if>
+      <if test="isdeposit != null" >
+        #{isdeposit,jdbcType=CHAR},
+      </if>
+      <if test="orgstatus != null" >
+        #{orgstatus,jdbcType=CHAR},
+      </if>
+      <if test="orgtype != null" >
+        #{orgtype,jdbcType=CHAR},
+      </if>
+      <if test="workflowkey != null" >
+        #{workflowkey,jdbcType=VARCHAR},
+      </if>
+      <if test="merapplyid != null" >
+        #{merapplyid,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdby != null" >
+        #{createdby,jdbcType=INTEGER},
+      </if>
+      <if test="updatedat != null" >
+        #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedby != null" >
+        #{updatedby,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fin.pojo.MerchantExample" resultType="java.lang.Integer" >
+    select count(*) from F_Merchant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update F_Merchant
+    <set >
+      <if test="record.merid != null" >
+        MerID = #{record.merid,jdbcType=INTEGER},
+      </if>
+      <if test="record.merchantno != null" >
+        MerchantNo = #{record.merchantno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        Name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobileno != null" >
+        MobileNo = #{record.mobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyname != null" >
+        CompanyName = #{record.companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nameabbr != null" >
+        NameAbbr = #{record.nameabbr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.meremail != null" >
+        MerEmail = #{record.meremail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null" >
+        Description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imgurl != null" >
+        ImgUrl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=DATE},
+      </if>
+      <if test="record.parentid != null" >
+        ParentID = #{record.parentid,jdbcType=INTEGER},
+      </if>
+      <if test="record.levelin != null" >
+        LevelIn = #{record.levelin,jdbcType=INTEGER},
+      </if>
+      <if test="record.isdeposit != null" >
+        IsDeposit = #{record.isdeposit,jdbcType=CHAR},
+      </if>
+      <if test="record.orgstatus != null" >
+        OrgStatus = #{record.orgstatus,jdbcType=CHAR},
+      </if>
+      <if test="record.orgtype != null" >
+        OrgType = #{record.orgtype,jdbcType=CHAR},
+      </if>
+      <if test="record.workflowkey != null" >
+        WorkFlowKey = #{record.workflowkey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.merapplyid != null" >
+        MerApplyID = #{record.merapplyid,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdat != null" >
+        CreatedAt = #{record.createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createdby != null" >
+        CreatedBy = #{record.createdby,jdbcType=INTEGER},
+      </if>
+      <if test="record.updatedat != null" >
+        UpdatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedby != null" >
+        UpdatedBy = #{record.updatedby,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update F_Merchant
+    set MerID = #{record.merid,jdbcType=INTEGER},
+      MerchantNo = #{record.merchantno,jdbcType=VARCHAR},
+      Name = #{record.name,jdbcType=VARCHAR},
+      MobileNo = #{record.mobileno,jdbcType=VARCHAR},
+      CompanyName = #{record.companyname,jdbcType=VARCHAR},
+      NameAbbr = #{record.nameabbr,jdbcType=VARCHAR},
+      MerEmail = #{record.meremail,jdbcType=VARCHAR},
+      Description = #{record.description,jdbcType=VARCHAR},
+      ImgUrl = #{record.imgurl,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=DATE},
+      ParentID = #{record.parentid,jdbcType=INTEGER},
+      LevelIn = #{record.levelin,jdbcType=INTEGER},
+      IsDeposit = #{record.isdeposit,jdbcType=CHAR},
+      OrgStatus = #{record.orgstatus,jdbcType=CHAR},
+      OrgType = #{record.orgtype,jdbcType=CHAR},
+      WorkFlowKey = #{record.workflowkey,jdbcType=VARCHAR},
+      MerApplyID = #{record.merapplyid,jdbcType=INTEGER},
+      CreatedAt = #{record.createdat,jdbcType=TIMESTAMP},
+      CreatedBy = #{record.createdby,jdbcType=INTEGER},
+      UpdatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      UpdatedBy = #{record.updatedby,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fin.pojo.Merchant" >
+    update F_Merchant
+    <set >
+      <if test="merchantno != null" >
+        MerchantNo = #{merchantno,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileno != null" >
+        MobileNo = #{mobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="companyname != null" >
+        CompanyName = #{companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="nameabbr != null" >
+        NameAbbr = #{nameabbr,jdbcType=VARCHAR},
+      </if>
+      <if test="meremail != null" >
+        MerEmail = #{meremail,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        Description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        ImgUrl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=DATE},
+      </if>
+      <if test="parentid != null" >
+        ParentID = #{parentid,jdbcType=INTEGER},
+      </if>
+      <if test="levelin != null" >
+        LevelIn = #{levelin,jdbcType=INTEGER},
+      </if>
+      <if test="isdeposit != null" >
+        IsDeposit = #{isdeposit,jdbcType=CHAR},
+      </if>
+      <if test="orgstatus != null" >
+        OrgStatus = #{orgstatus,jdbcType=CHAR},
+      </if>
+      <if test="orgtype != null" >
+        OrgType = #{orgtype,jdbcType=CHAR},
+      </if>
+      <if test="workflowkey != null" >
+        WorkFlowKey = #{workflowkey,jdbcType=VARCHAR},
+      </if>
+      <if test="merapplyid != null" >
+        MerApplyID = #{merapplyid,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        CreatedAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdby != null" >
+        CreatedBy = #{createdby,jdbcType=INTEGER},
+      </if>
+      <if test="updatedat != null" >
+        UpdatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedby != null" >
+        UpdatedBy = #{updatedby,jdbcType=INTEGER},
+      </if>
+    </set>
+    where MerID = #{merid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fin.pojo.Merchant" >
+    update F_Merchant
+    set MerchantNo = #{merchantno,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      MobileNo = #{mobileno,jdbcType=VARCHAR},
+      CompanyName = #{companyname,jdbcType=VARCHAR},
+      NameAbbr = #{nameabbr,jdbcType=VARCHAR},
+      MerEmail = #{meremail,jdbcType=VARCHAR},
+      Description = #{description,jdbcType=VARCHAR},
+      ImgUrl = #{imgurl,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=DATE},
+      ParentID = #{parentid,jdbcType=INTEGER},
+      LevelIn = #{levelin,jdbcType=INTEGER},
+      IsDeposit = #{isdeposit,jdbcType=CHAR},
+      OrgStatus = #{orgstatus,jdbcType=CHAR},
+      OrgType = #{orgtype,jdbcType=CHAR},
+      WorkFlowKey = #{workflowkey,jdbcType=VARCHAR},
+      MerApplyID = #{merapplyid,jdbcType=INTEGER},
+      CreatedAt = #{createdat,jdbcType=TIMESTAMP},
+      CreatedBy = #{createdby,jdbcType=INTEGER},
+      UpdatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      UpdatedBy = #{updatedby,jdbcType=INTEGER}
+    where MerID = #{merid,jdbcType=INTEGER}
+  </update>
+</mapper>

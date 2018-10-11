@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fin.dao.SysParamsMapper" >
+  <resultMap id="BaseResultMap" type="com.fin.pojo.SysParams" >
+    <id column="ParamID" property="paramid" jdbcType="INTEGER" />
+    <result column="KeyStr" property="keystr" jdbcType="VARCHAR" />
+    <result column="Value1" property="value1" jdbcType="VARCHAR" />
+    <result column="Value2" property="value2" jdbcType="VARCHAR" />
+    <result column="TypeStr" property="typestr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ParamID, KeyStr, Value1, Value2, TypeStr
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fin.pojo.SysParamsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from F_SysParams
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from F_SysParams
+    where ParamID = #{paramid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from F_SysParams
+    where ParamID = #{paramid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fin.pojo.SysParamsExample" >
+    delete from F_SysParams
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fin.pojo.SysParams" >
+    insert into F_SysParams (ParamID, KeyStr, Value1, 
+      Value2, TypeStr)
+    values (#{paramid,jdbcType=INTEGER}, #{keystr,jdbcType=VARCHAR}, #{value1,jdbcType=VARCHAR}, 
+      #{value2,jdbcType=VARCHAR}, #{typestr,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fin.pojo.SysParams" >
+    insert into F_SysParams
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="paramid != null" >
+        ParamID,
+      </if>
+      <if test="keystr != null" >
+        KeyStr,
+      </if>
+      <if test="value1 != null" >
+        Value1,
+      </if>
+      <if test="value2 != null" >
+        Value2,
+      </if>
+      <if test="typestr != null" >
+        TypeStr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="paramid != null" >
+        #{paramid,jdbcType=INTEGER},
+      </if>
+      <if test="keystr != null" >
+        #{keystr,jdbcType=VARCHAR},
+      </if>
+      <if test="value1 != null" >
+        #{value1,jdbcType=VARCHAR},
+      </if>
+      <if test="value2 != null" >
+        #{value2,jdbcType=VARCHAR},
+      </if>
+      <if test="typestr != null" >
+        #{typestr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fin.pojo.SysParamsExample" resultType="java.lang.Integer" >
+    select count(*) from F_SysParams
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update F_SysParams
+    <set >
+      <if test="record.paramid != null" >
+        ParamID = #{record.paramid,jdbcType=INTEGER},
+      </if>
+      <if test="record.keystr != null" >
+        KeyStr = #{record.keystr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.value1 != null" >
+        Value1 = #{record.value1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.value2 != null" >
+        Value2 = #{record.value2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.typestr != null" >
+        TypeStr = #{record.typestr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update F_SysParams
+    set ParamID = #{record.paramid,jdbcType=INTEGER},
+      KeyStr = #{record.keystr,jdbcType=VARCHAR},
+      Value1 = #{record.value1,jdbcType=VARCHAR},
+      Value2 = #{record.value2,jdbcType=VARCHAR},
+      TypeStr = #{record.typestr,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fin.pojo.SysParams" >
+    update F_SysParams
+    <set >
+      <if test="keystr != null" >
+        KeyStr = #{keystr,jdbcType=VARCHAR},
+      </if>
+      <if test="value1 != null" >
+        Value1 = #{value1,jdbcType=VARCHAR},
+      </if>
+      <if test="value2 != null" >
+        Value2 = #{value2,jdbcType=VARCHAR},
+      </if>
+      <if test="typestr != null" >
+        TypeStr = #{typestr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ParamID = #{paramid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fin.pojo.SysParams" >
+    update F_SysParams
+    set KeyStr = #{keystr,jdbcType=VARCHAR},
+      Value1 = #{value1,jdbcType=VARCHAR},
+      Value2 = #{value2,jdbcType=VARCHAR},
+      TypeStr = #{typestr,jdbcType=VARCHAR}
+    where ParamID = #{paramid,jdbcType=INTEGER}
+  </update>
+</mapper>

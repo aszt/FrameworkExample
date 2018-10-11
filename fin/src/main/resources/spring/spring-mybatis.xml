@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+    					http://www.springframework.org/schema/tx/spring-tx.xsd
+    					http://www.springframework.org/schema/aop
+            			http://www.springframework.org/schema/aop/spring-aop.xsd
+            			http://www.springframework.org/schema/cache
+    					http://www.springframework.org/schema/cache/spring-cache.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 业务逻辑、组件扫描（控制器不要,控制器交给springmvc处理） -->
+    <context:component-scan base-package="com.fin">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 引入配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/jdbc.properties</value>
+                <value>classpath:properties/systemParam.properties</value>
+                <value>classpath:properties/redis.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 数据源 -->
+    <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="false" />
+        <property name="validationQuery" value="SELECT 1" />
+        <property name="validationInterval" value="30000" />
+        <property name="timeBetweenEvictionRunsMillis" value="30000" />
+        <property name="maxActive" value="${jdbc.maxActive}" />
+        <property name="minIdle" value="${jdbc.minIdle}" />
+        <property name="maxWait" value="${jdbc.maxWait}" />
+        <property name="initialSize" value="${jdbc.initialSize}" />
+        <property name="removeAbandonedTimeout" value="60" />
+        <property name="removeAbandoned" value="true" />
+        <property name="logAbandoned" value="true" />
+        <property name="minEvictableIdleTimeMillis" value="30000" />
+        <property name="jmxEnabled" value="true" />
+    </bean>
+
+    <!-- mybatis整合 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 配置扫描器，将mybatis接口的实现加入到ioc容器中 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.fin.dao"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>

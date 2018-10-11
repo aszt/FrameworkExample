@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fin.dao.AccountsMapper" >
+  <resultMap id="BaseResultMap" type="com.fin.pojo.Accounts" >
+    <id column="AcctSeqID" property="acctseqid" jdbcType="INTEGER" />
+    <result column="LoginID" property="loginid" jdbcType="VARCHAR" />
+    <result column="AcctMobileNo" property="acctmobileno" jdbcType="VARCHAR" />
+    <result column="AcctEmail" property="acctemail" jdbcType="VARCHAR" />
+    <result column="AcctPassword" property="acctpassword" jdbcType="VARCHAR" />
+    <result column="AcctName" property="acctname" jdbcType="VARCHAR" />
+    <result column="Gender" property="gender" jdbcType="CHAR" />
+    <result column="AcctStatus" property="acctstatus" jdbcType="CHAR" />
+    <result column="Description" property="description" jdbcType="VARCHAR" />
+    <result column="Integration" property="integration" jdbcType="CHAR" />
+    <result column="WeChat" property="wechat" jdbcType="VARCHAR" />
+    <result column="QQ" property="qq" jdbcType="VARCHAR" />
+    <result column="Weibo" property="weibo" jdbcType="VARCHAR" />
+    <result column="AliPay" property="alipay" jdbcType="VARCHAR" />
+    <result column="Taobao" property="taobao" jdbcType="VARCHAR" />
+    <result column="Others" property="others" jdbcType="VARCHAR" />
+    <result column="MerID" property="merid" jdbcType="INTEGER" />
+    <result column="CompanyName" property="companyname" jdbcType="VARCHAR" />
+    <result column="CreatedFlag" property="createdflag" jdbcType="CHAR" />
+    <result column="LastLogin" property="lastlogin" jdbcType="TIMESTAMP" />
+    <result column="PassErrorTime" property="passerrortime" jdbcType="INTEGER" />
+    <result column="CreatedBy" property="createdby" jdbcType="INTEGER" />
+    <result column="CreatedAt" property="createdat" jdbcType="TIMESTAMP" />
+    <result column="UpdatedBy" property="updatedby" jdbcType="INTEGER" />
+    <result column="UpdatedAt" property="updatedat" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    AcctSeqID, LoginID, AcctMobileNo, AcctEmail, AcctPassword, AcctName, Gender, AcctStatus, 
+    Description, Integration, WeChat, QQ, Weibo, AliPay, Taobao, Others, MerID, CompanyName, 
+    CreatedFlag, LastLogin, PassErrorTime, CreatedBy, CreatedAt, UpdatedBy, UpdatedAt
+  </sql>
+
+  <resultMap type="com.fin.pojo.Accounts" id="AccountsResultMap" autoMapping="true">
+    <id column="AcctSeqID" property="acctseqid" javaType="INTEGER"/>
+    <result property="roleid" column="roleid"/>
+    <result property="rolename" column="rolename"/>
+  </resultMap>
+
+  <!-- 查询所有 -->
+  <select id="selectAll" resultMap="AccountsResultMap">
+    SELECT
+        a.*, u.RoleID 'roleid',
+        r.RoleName 'rolename'
+    FROM
+        F_Accounts a
+    LEFT JOIN F_UserRole u ON a.AcctSeqID = u.AcctSeqID
+    LEFT JOIN F_Role r ON u.RoleID = r.RoleID
+    WHERE
+        a.AcctStatus != 'D'
+    <if test="loginid!=null">AND a.LoginID LIKE "%"#{loginid}"%"</if>
+    <if test="acctname!=null">AND a.AcctName LIKE "%"#{acctname}"%"</if>
+    <if test="companyname!=null">AND a.CompanyName LIKE "%"#{companyname}"%"</if>
+    <if test="roleid!=null">AND u.RoleID = #{roleid}</if>
+    <if test="acctstatus!=null">AND a.AcctStatus = #{acctstatus}</if>
+    <if test="starttime != null and starttime != ''">AND a.CreatedAt <![CDATA[>=]]> #{starttime}</if>
+    <if test="endtime != null and endtime != ''">AND a.CreatedAt <![CDATA[<=]]>#{endtime}</if>
+    ORDER BY
+	a.CreatedAt DESC
+  </select>
+
+  <select id="selectByLoginID" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from F_Accounts
+    where BINARY LoginID = #{loginid} AND AcctStatus != 'D'
+  </select>
+
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fin.pojo.AccountsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from F_Accounts
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from F_Accounts
+    where AcctSeqID = #{acctseqid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from F_Accounts
+    where AcctSeqID = #{acctseqid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fin.pojo.AccountsExample" >
+    delete from F_Accounts
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fin.pojo.Accounts" useGeneratedKeys="true" keyProperty="acctseqid">
+    insert into F_Accounts (AcctSeqID, LoginID, AcctMobileNo, 
+      AcctEmail, AcctPassword, AcctName, 
+      Gender, AcctStatus, Description, 
+      Integration, WeChat, QQ, 
+      Weibo, AliPay, Taobao, 
+      Others, MerID, CompanyName, 
+      CreatedFlag, LastLogin, PassErrorTime, 
+      CreatedBy, CreatedAt, UpdatedBy, 
+      UpdatedAt)
+    values (#{acctseqid,jdbcType=INTEGER}, #{loginid,jdbcType=VARCHAR}, #{acctmobileno,jdbcType=VARCHAR}, 
+      #{acctemail,jdbcType=VARCHAR}, #{acctpassword,jdbcType=VARCHAR}, #{acctname,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=CHAR}, #{acctstatus,jdbcType=CHAR}, #{description,jdbcType=VARCHAR}, 
+      #{integration,jdbcType=CHAR}, #{wechat,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, 
+      #{weibo,jdbcType=VARCHAR}, #{alipay,jdbcType=VARCHAR}, #{taobao,jdbcType=VARCHAR}, 
+      #{others,jdbcType=VARCHAR}, #{merid,jdbcType=INTEGER}, #{companyname,jdbcType=VARCHAR}, 
+      #{createdflag,jdbcType=CHAR}, #{lastlogin,jdbcType=TIMESTAMP}, #{passerrortime,jdbcType=INTEGER}, 
+      #{createdby,jdbcType=INTEGER}, #{createdat,jdbcType=TIMESTAMP}, #{updatedby,jdbcType=INTEGER}, 
+      #{updatedat,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fin.pojo.Accounts" >
+    insert into F_Accounts
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="acctseqid != null" >
+        AcctSeqID,
+      </if>
+      <if test="loginid != null" >
+        LoginID,
+      </if>
+      <if test="acctmobileno != null" >
+        AcctMobileNo,
+      </if>
+      <if test="acctemail != null" >
+        AcctEmail,
+      </if>
+      <if test="acctpassword != null" >
+        AcctPassword,
+      </if>
+      <if test="acctname != null" >
+        AcctName,
+      </if>
+      <if test="gender != null" >
+        Gender,
+      </if>
+      <if test="acctstatus != null" >
+        AcctStatus,
+      </if>
+      <if test="description != null" >
+        Description,
+      </if>
+      <if test="integration != null" >
+        Integration,
+      </if>
+      <if test="wechat != null" >
+        WeChat,
+      </if>
+      <if test="qq != null" >
+        QQ,
+      </if>
+      <if test="weibo != null" >
+        Weibo,
+      </if>
+      <if test="alipay != null" >
+        AliPay,
+      </if>
+      <if test="taobao != null" >
+        Taobao,
+      </if>
+      <if test="others != null" >
+        Others,
+      </if>
+      <if test="merid != null" >
+        MerID,
+      </if>
+      <if test="companyname != null" >
+        CompanyName,
+      </if>
+      <if test="createdflag != null" >
+        CreatedFlag,
+      </if>
+      <if test="lastlogin != null" >
+        LastLogin,
+      </if>
+      <if test="passerrortime != null" >
+        PassErrorTime,
+      </if>
+      <if test="createdby != null" >
+        CreatedBy,
+      </if>
+      <if test="createdat != null" >
+        CreatedAt,
+      </if>
+      <if test="updatedby != null" >
+        UpdatedBy,
+      </if>
+      <if test="updatedat != null" >
+        UpdatedAt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="acctseqid != null" >
+        #{acctseqid,jdbcType=INTEGER},
+      </if>
+      <if test="loginid != null" >
+        #{loginid,jdbcType=VARCHAR},
+      </if>
+      <if test="acctmobileno != null" >
+        #{acctmobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="acctemail != null" >
+        #{acctemail,jdbcType=VARCHAR},
+      </if>
+      <if test="acctpassword != null" >
+        #{acctpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="acctname != null" >
+        #{acctname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=CHAR},
+      </if>
+      <if test="acctstatus != null" >
+        #{acctstatus,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="integration != null" >
+        #{integration,jdbcType=CHAR},
+      </if>
+      <if test="wechat != null" >
+        #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weibo != null" >
+        #{weibo,jdbcType=VARCHAR},
+      </if>
+      <if test="alipay != null" >
+        #{alipay,jdbcType=VARCHAR},
+      </if>
+      <if test="taobao != null" >
+        #{taobao,jdbcType=VARCHAR},
+      </if>
+      <if test="others != null" >
+        #{others,jdbcType=VARCHAR},
+      </if>
+      <if test="merid != null" >
+        #{merid,jdbcType=INTEGER},
+      </if>
+      <if test="companyname != null" >
+        #{companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="createdflag != null" >
+        #{createdflag,jdbcType=CHAR},
+      </if>
+      <if test="lastlogin != null" >
+        #{lastlogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="passerrortime != null" >
+        #{passerrortime,jdbcType=INTEGER},
+      </if>
+      <if test="createdby != null" >
+        #{createdby,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedby != null" >
+        #{updatedby,jdbcType=INTEGER},
+      </if>
+      <if test="updatedat != null" >
+        #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fin.pojo.AccountsExample" resultType="java.lang.Integer" >
+    select count(*) from F_Accounts
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update F_Accounts
+    <set >
+      <if test="record.acctseqid != null" >
+        AcctSeqID = #{record.acctseqid,jdbcType=INTEGER},
+      </if>
+      <if test="record.loginid != null" >
+        LoginID = #{record.loginid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctmobileno != null" >
+        AcctMobileNo = #{record.acctmobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctemail != null" >
+        AcctEmail = #{record.acctemail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctpassword != null" >
+        AcctPassword = #{record.acctpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctname != null" >
+        AcctName = #{record.acctname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gender != null" >
+        Gender = #{record.gender,jdbcType=CHAR},
+      </if>
+      <if test="record.acctstatus != null" >
+        AcctStatus = #{record.acctstatus,jdbcType=CHAR},
+      </if>
+      <if test="record.description != null" >
+        Description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.integration != null" >
+        Integration = #{record.integration,jdbcType=CHAR},
+      </if>
+      <if test="record.wechat != null" >
+        WeChat = #{record.wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qq != null" >
+        QQ = #{record.qq,jdbcType=VARCHAR},
+      </if>
+      <if test="record.weibo != null" >
+        Weibo = #{record.weibo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alipay != null" >
+        AliPay = #{record.alipay,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taobao != null" >
+        Taobao = #{record.taobao,jdbcType=VARCHAR},
+      </if>
+      <if test="record.others != null" >
+        Others = #{record.others,jdbcType=VARCHAR},
+      </if>
+      <if test="record.merid != null" >
+        MerID = #{record.merid,jdbcType=INTEGER},
+      </if>
+      <if test="record.companyname != null" >
+        CompanyName = #{record.companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdflag != null" >
+        CreatedFlag = #{record.createdflag,jdbcType=CHAR},
+      </if>
+      <if test="record.lastlogin != null" >
+        LastLogin = #{record.lastlogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.passerrortime != null" >
+        PassErrorTime = #{record.passerrortime,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdby != null" >
+        CreatedBy = #{record.createdby,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdat != null" >
+        CreatedAt = #{record.createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedby != null" >
+        UpdatedBy = #{record.updatedby,jdbcType=INTEGER},
+      </if>
+      <if test="record.updatedat != null" >
+        UpdatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update F_Accounts
+    set AcctSeqID = #{record.acctseqid,jdbcType=INTEGER},
+      LoginID = #{record.loginid,jdbcType=VARCHAR},
+      AcctMobileNo = #{record.acctmobileno,jdbcType=VARCHAR},
+      AcctEmail = #{record.acctemail,jdbcType=VARCHAR},
+      AcctPassword = #{record.acctpassword,jdbcType=VARCHAR},
+      AcctName = #{record.acctname,jdbcType=VARCHAR},
+      Gender = #{record.gender,jdbcType=CHAR},
+      AcctStatus = #{record.acctstatus,jdbcType=CHAR},
+      Description = #{record.description,jdbcType=VARCHAR},
+      Integration = #{record.integration,jdbcType=CHAR},
+      WeChat = #{record.wechat,jdbcType=VARCHAR},
+      QQ = #{record.qq,jdbcType=VARCHAR},
+      Weibo = #{record.weibo,jdbcType=VARCHAR},
+      AliPay = #{record.alipay,jdbcType=VARCHAR},
+      Taobao = #{record.taobao,jdbcType=VARCHAR},
+      Others = #{record.others,jdbcType=VARCHAR},
+      MerID = #{record.merid,jdbcType=INTEGER},
+      CompanyName = #{record.companyname,jdbcType=VARCHAR},
+      CreatedFlag = #{record.createdflag,jdbcType=CHAR},
+      LastLogin = #{record.lastlogin,jdbcType=TIMESTAMP},
+      PassErrorTime = #{record.passerrortime,jdbcType=INTEGER},
+      CreatedBy = #{record.createdby,jdbcType=INTEGER},
+      CreatedAt = #{record.createdat,jdbcType=TIMESTAMP},
+      UpdatedBy = #{record.updatedby,jdbcType=INTEGER},
+      UpdatedAt = #{record.updatedat,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fin.pojo.Accounts" >
+    update F_Accounts
+    <set >
+      <if test="loginid != null" >
+        LoginID = #{loginid,jdbcType=VARCHAR},
+      </if>
+      <if test="acctmobileno != null" >
+        AcctMobileNo = #{acctmobileno,jdbcType=VARCHAR},
+      </if>
+      <if test="acctemail != null" >
+        AcctEmail = #{acctemail,jdbcType=VARCHAR},
+      </if>
+      <if test="acctpassword != null" >
+        AcctPassword = #{acctpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="acctname != null" >
+        AcctName = #{acctname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        Gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="acctstatus != null" >
+        AcctStatus = #{acctstatus,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        Description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="integration != null" >
+        Integration = #{integration,jdbcType=CHAR},
+      </if>
+      <if test="wechat != null" >
+        WeChat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        QQ = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weibo != null" >
+        Weibo = #{weibo,jdbcType=VARCHAR},
+      </if>
+      <if test="alipay != null" >
+        AliPay = #{alipay,jdbcType=VARCHAR},
+      </if>
+      <if test="taobao != null" >
+        Taobao = #{taobao,jdbcType=VARCHAR},
+      </if>
+      <if test="others != null" >
+        Others = #{others,jdbcType=VARCHAR},
+      </if>
+      <if test="merid != null" >
+        MerID = #{merid,jdbcType=INTEGER},
+      </if>
+      <if test="companyname != null" >
+        CompanyName = #{companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="createdflag != null" >
+        CreatedFlag = #{createdflag,jdbcType=CHAR},
+      </if>
+      <if test="lastlogin != null" >
+        LastLogin = #{lastlogin,jdbcType=TIMESTAMP},
+      </if>
+      <if test="passerrortime != null" >
+        PassErrorTime = #{passerrortime,jdbcType=INTEGER},
+      </if>
+      <if test="createdby != null" >
+        CreatedBy = #{createdby,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        CreatedAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedby != null" >
+        UpdatedBy = #{updatedby,jdbcType=INTEGER},
+      </if>
+      <if test="updatedat != null" >
+        UpdatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where AcctSeqID = #{acctseqid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fin.pojo.Accounts" >
+    update F_Accounts
+    set LoginID = #{loginid,jdbcType=VARCHAR},
+      AcctMobileNo = #{acctmobileno,jdbcType=VARCHAR},
+      AcctEmail = #{acctemail,jdbcType=VARCHAR},
+      AcctPassword = #{acctpassword,jdbcType=VARCHAR},
+      AcctName = #{acctname,jdbcType=VARCHAR},
+      Gender = #{gender,jdbcType=CHAR},
+      AcctStatus = #{acctstatus,jdbcType=CHAR},
+      Description = #{description,jdbcType=VARCHAR},
+      Integration = #{integration,jdbcType=CHAR},
+      WeChat = #{wechat,jdbcType=VARCHAR},
+      QQ = #{qq,jdbcType=VARCHAR},
+      Weibo = #{weibo,jdbcType=VARCHAR},
+      AliPay = #{alipay,jdbcType=VARCHAR},
+      Taobao = #{taobao,jdbcType=VARCHAR},
+      Others = #{others,jdbcType=VARCHAR},
+      MerID = #{merid,jdbcType=INTEGER},
+      CompanyName = #{companyname,jdbcType=VARCHAR},
+      CreatedFlag = #{createdflag,jdbcType=CHAR},
+      LastLogin = #{lastlogin,jdbcType=TIMESTAMP},
+      PassErrorTime = #{passerrortime,jdbcType=INTEGER},
+      CreatedBy = #{createdby,jdbcType=INTEGER},
+      CreatedAt = #{createdat,jdbcType=TIMESTAMP},
+      UpdatedBy = #{updatedby,jdbcType=INTEGER},
+      UpdatedAt = #{updatedat,jdbcType=TIMESTAMP}
+    where AcctSeqID = #{acctseqid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fin.dao.JournalMapper" >
+  <resultMap id="BaseResultMap" type="com.fin.pojo.Journal" >
+    <id column="SeqID" property="seqid" jdbcType="INTEGER" />
+    <result column="JournalID" property="journalid" jdbcType="VARCHAR" />
+    <result column="AcctSeqID" property="acctseqid" jdbcType="INTEGER" />
+    <result column="ActionDesc" property="actiondesc" jdbcType="VARCHAR" />
+    <result column="DoTime" property="dotime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    SeqID, JournalID, AcctSeqID, ActionDesc, DoTime
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fin.pojo.JournalExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from F_Journal
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from F_Journal
+    where SeqID = #{seqid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from F_Journal
+    where SeqID = #{seqid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fin.pojo.JournalExample" >
+    delete from F_Journal
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fin.pojo.Journal" >
+    insert into F_Journal (SeqID, JournalID, AcctSeqID, 
+      ActionDesc, DoTime)
+    values (#{seqid,jdbcType=INTEGER}, #{journalid,jdbcType=VARCHAR}, #{acctseqid,jdbcType=INTEGER}, 
+      #{actiondesc,jdbcType=VARCHAR}, #{dotime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fin.pojo.Journal" >
+    insert into F_Journal
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="seqid != null" >
+        SeqID,
+      </if>
+      <if test="journalid != null" >
+        JournalID,
+      </if>
+      <if test="acctseqid != null" >
+        AcctSeqID,
+      </if>
+      <if test="actiondesc != null" >
+        ActionDesc,
+      </if>
+      <if test="dotime != null" >
+        DoTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="seqid != null" >
+        #{seqid,jdbcType=INTEGER},
+      </if>
+      <if test="journalid != null" >
+        #{journalid,jdbcType=VARCHAR},
+      </if>
+      <if test="acctseqid != null" >
+        #{acctseqid,jdbcType=INTEGER},
+      </if>
+      <if test="actiondesc != null" >
+        #{actiondesc,jdbcType=VARCHAR},
+      </if>
+      <if test="dotime != null" >
+        #{dotime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fin.pojo.JournalExample" resultType="java.lang.Integer" >
+    select count(*) from F_Journal
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update F_Journal
+    <set >
+      <if test="record.seqid != null" >
+        SeqID = #{record.seqid,jdbcType=INTEGER},
+      </if>
+      <if test="record.journalid != null" >
+        JournalID = #{record.journalid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctseqid != null" >
+        AcctSeqID = #{record.acctseqid,jdbcType=INTEGER},
+      </if>
+      <if test="record.actiondesc != null" >
+        ActionDesc = #{record.actiondesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dotime != null" >
+        DoTime = #{record.dotime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update F_Journal
+    set SeqID = #{record.seqid,jdbcType=INTEGER},
+      JournalID = #{record.journalid,jdbcType=VARCHAR},
+      AcctSeqID = #{record.acctseqid,jdbcType=INTEGER},
+      ActionDesc = #{record.actiondesc,jdbcType=VARCHAR},
+      DoTime = #{record.dotime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fin.pojo.Journal" >
+    update F_Journal
+    <set >
+      <if test="journalid != null" >
+        JournalID = #{journalid,jdbcType=VARCHAR},
+      </if>
+      <if test="acctseqid != null" >
+        AcctSeqID = #{acctseqid,jdbcType=INTEGER},
+      </if>
+      <if test="actiondesc != null" >
+        ActionDesc = #{actiondesc,jdbcType=VARCHAR},
+      </if>
+      <if test="dotime != null" >
+        DoTime = #{dotime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where SeqID = #{seqid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fin.pojo.Journal" >
+    update F_Journal
+    set JournalID = #{journalid,jdbcType=VARCHAR},
+      AcctSeqID = #{acctseqid,jdbcType=INTEGER},
+      ActionDesc = #{actiondesc,jdbcType=VARCHAR},
+      DoTime = #{dotime,jdbcType=TIMESTAMP}
+    where SeqID = #{seqid,jdbcType=INTEGER}
+  </update>
+</mapper>
